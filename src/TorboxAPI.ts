@@ -5,7 +5,7 @@ export class TorboxAPI {
     searchBaseUrl;
 
     constructor() {
-        this.apiKey = "";
+        this.apiKey = ""; // You must provide your own Torbox API key
         this.headers = new Headers({ 'Authorization': `Bearer ade2abf1-61c7-4ad2-a22d-1aa3fb964193` });
         this.baseUrl = "http://192.168.0.22:5000/main";
         //this.baseUrl = "http://localhost:5000/main";
@@ -13,7 +13,7 @@ export class TorboxAPI {
         //this.searchBaseUrl = "http://localhost:5000/search";
     }
 
-    async GetTorrentsByIMDB(id:string, season:Number|null = null, episode:Number|null = null){
+    async GetTorrentsByIMDB(id:string, season:number|null = null, episode:number|null = null){
         let url : string = "";
         let torrents;
 
@@ -26,7 +26,7 @@ export class TorboxAPI {
         else {
             throw "Season and Episode must both be provided, or neither.";
         }
-        console.log(url)
+
         await fetch(url, { 
             method: 'GET',
             headers: this.headers,
@@ -37,10 +37,11 @@ export class TorboxAPI {
     }
 
     async QueueTorrentByMagnet(magnet:string):Promise<any>{
-        let url : string = `${this.baseUrl}/api/torrents/createtorrent`;
-        let formData = new FormData();
+        const url : string = `${this.baseUrl}/api/torrents/createtorrent`;
+        const formData = new FormData();
         formData.append('magnet', magnet);
         let resp;
+
         await fetch(url, {
             method: 'POST',
             headers: this.headers,
@@ -52,7 +53,7 @@ export class TorboxAPI {
     }
 
     async GetTorrentFromMyList(id:number){
-        let url : string = `${this.baseUrl}/api/torrents/mylist?id=${id}`;
+        const url : string = `${this.baseUrl}/api/torrents/mylist?id=${id}`;
         let torrent:any;
         
         await fetch(url, { 
@@ -68,7 +69,7 @@ export class TorboxAPI {
     }
 
     async GetStreamFromFile(torrentId:number, fileId:number){
-        let url : string = `${this.baseUrl}/api/torrents/requestdl?token=${this.apiKey}&torrent_id=${torrentId}&file_id=${fileId}`;
+        const url : string = `${this.baseUrl}/api/torrents/requestdl?token=${this.apiKey}&torrent_id=${torrentId}&file_id=${fileId}`;
         let videoUrl;
         
         await fetch(url, { 
