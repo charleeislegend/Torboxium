@@ -9,11 +9,16 @@ searchUrl = 'https://search-api.torbox.app'
 mainUrl = 'https://api.torbox.app/v1'
 
 @app.route('/search/<path:subpath>', methods=['GET', 'POST', 'PUT', 'DELETE'])
-#@app.route('/', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def proxy_search(subpath=''):
     try:
-        # Make a request to localhost:11434 with the specified path
-        target_url_with_path = f'{searchUrl}/{subpath}'
+        params = request.url.partition("?")[2]
+        target_url_with_path = ""
+        
+        if len(params) > 0:
+            target_url_with_path = f'{searchUrl}/{subpath}?{params}'
+        else :
+            target_url_with_path = f'{searchUrl}/{subpath}'
+            
         response = requests.request(
             method=request.method,
             url=target_url_with_path,
@@ -23,11 +28,9 @@ def proxy_search(subpath=''):
             allow_redirects=False
         )
 
-        # Build the response
         resp = jsonify(response.json())
         resp.status_code = response.status_code
 
-        # Set CORS headers
         resp.headers['Access-Control-Allow-Origin'] = '*'
         resp.headers['Access-Control-Allow-Headers'] = '*'
         resp.headers['Access-Control-Allow-Credentials'] = 'true'
@@ -40,7 +43,6 @@ def proxy_search(subpath=''):
 @app.route('/main/<path:subpath>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def proxy_main(subpath=''):
     try:
-        # Make a request to localhost:11434 with the specified path
         params = request.url.partition("?")[2]
         target_url_with_path = ""
         
@@ -58,11 +60,9 @@ def proxy_main(subpath=''):
             allow_redirects=False
         )
 
-        # Build the response
         resp = jsonify(response.json())
         resp.status_code = response.status_code
 
-        # Set CORS headers
         resp.headers['Access-Control-Allow-Origin'] = '*'
         resp.headers['Access-Control-Allow-Headers'] = '*'
         resp.headers['Access-Control-Allow-Credentials'] = 'true'
