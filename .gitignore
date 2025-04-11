@@ -152,3 +152,6 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
+
+
+src/apikey.ts
