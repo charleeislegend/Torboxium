@@ -12,27 +12,27 @@ let tmdbApi = new TmdbApi()
 let shows = ref([])
 let torrents = ref()
 let files = ref()
-let selectedTorrentId : number = -1
 let state = ref("shows")
+let selectedTorrentId: number = -1
 let imdbUrl = ref("")
 let tmdbSearch = ref("")
 
-async function getTorrents(){
 const getShowsSortedByPopularity = computed(() => {
   const clonedShows = [...shows.value];
   clonedShows.sort((a:any, b:any) => b.popularity - a.popularity);
   return clonedShows;
 });
 
+async function getTorrents() {
   const regex = /title\/(tt\d{6,12})/i;
   const match = imdbUrl.value.match(regex);
   let imdbId;
 
   if (match) {
-      imdbId = match[1];
-      const fetchedData = await api.GetTorrentsByIMDB(imdbId);
-      torrents.value = fetchedData;
-      state.value = "torrents"
+    imdbId = match[1];
+    const fetchedData = await api.GetTorrentsByIMDB(imdbId);
+    torrents.value = fetchedData;
+    state.value = "torrents"
   }
 }
 
