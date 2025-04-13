@@ -13,6 +13,7 @@ let shows = ref([])
 let torrents = ref()
 let files = ref()
 let selectedTorrentId : number = -1
+let state = ref("shows")
 let imdbUrl = ref("")
 let tmdbSearch = ref("")
 
