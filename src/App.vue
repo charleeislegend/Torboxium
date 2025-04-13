@@ -3,16 +3,26 @@ import ComponentTorrentItem from './components/ComponentTorrentItem.vue';
 import ComponentFileItem from './components/ComponentFileItem.vue';
 
 import { TorboxAPI } from './TorboxAPI.ts'
-import { ref } from 'vue';
+import { TmdbApi } from './TmdbAPI.ts'
+import { ref, computed } from 'vue';
+import ComponentMediaItem from './components/ComponentMediaItem.vue';
 
 let api = new TorboxAPI()
+let tmdbApi = new TmdbApi()
+let shows = ref([])
 let torrents = ref()
 let files = ref()
-let state = ref("torrents")
 let selectedTorrentId : number = -1
 let imdbUrl = ref("")
+let tmdbSearch = ref("")
 
 async function getTorrents(){
+const getShowsSortedByPopularity = computed(() => {
+  const clonedShows = [...shows.value];
+  clonedShows.sort((a:any, b:any) => b.popularity - a.popularity);
+  return clonedShows;
+});
+
   const regex = /title\/(tt\d{6,12})/i;
   const match = imdbUrl.value.match(regex);
   let imdbId;
@@ -25,6 +35,19 @@ async function getTorrents(){
   }
 }
 
+async function getShows() {
+  const fetchedData = await tmdbApi.SearchShows(tmdbSearch.value)
+  shows.value = fetchedData;
+  state.value = "shows"
+}
+
+async function showSelected(tmdbId: number) {
+  const imdbID = await tmdbApi.GetImdbIdByTmdbId(tmdbId)
+  imdbUrl.value = `https://www.imdb.com/title/${imdbID}`
+  getTorrents();
+  state.value = "torrents"
+}
+
 async function torrentSelected(torrentId: number) {
   const fetchedData = await api.GetTorrentFromMyList(torrentId)
   state.value = "files"
@@ -34,16 +57,24 @@ async function torrentSelected(torrentId: number) {
 </script>
 
 <template>
-  <div>
+  <!--<div>
     <input v-model="imdbUrl" placeholder="Input a IMDB URL">
     <button @click="getTorrents">Get torrents</button>
+  </div>-->
+  <div>
+    <input v-model="tmdbSearch" placeholder="search">
+    <button @click="getShows">Get shows</button>
+  </div>
+  <div id="movies-section" v-if="state == 'shows'">
+    <ComponentMediaItem @show-selected="showSelected" v-for="show in getShowsSortedByPopularity" :id="show.id" :name="show.name" :poster="show.poster_path" :popularity="show.popularity"></ComponentMediaItem>
   </div>
   <div id="torrents-section" v-if="state == 'torrents'">
     <ComponentTorrentItem @torrent-selected="torrentSelected" v-for="torrent in torrents" :title="torrent.raw_title"
       :magnet="torrent.magnet" :cached="torrent.cached" :tracker="torrent.tracker"></ComponentTorrentItem>
   </div>
   <div id="files-section" v-if="state == 'files'">
-    <ComponentFileItem v-for="file in files" :id="file.id" :torrent-id="selectedTorrentId" :name="file.name" :size="file.size"></ComponentFileItem> 
+    <ComponentFileItem v-for="file in files" :id="file.id" :torrent-id="selectedTorrentId" :name="file.name"
+      :size="file.size"></ComponentFileItem>
   </div>
 </template>
 

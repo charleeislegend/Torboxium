@@ -1,3 +1,4 @@
 export class ApiKey {
-    static ApiKey = ""
+    static TorboxApiKey = ""
+    static TmdbApiKey = ""
 }

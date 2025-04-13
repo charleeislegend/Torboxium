@@ -6,8 +6,7 @@ export class TorboxAPI {
     searchBaseUrl;
 
     constructor() {
-        this.apiKey = ApiKey.ApiKey; // You must provide your own Torbox API key
-        this.headers = new Headers({ 'Authorization': `Bearer ade2abf1-61c7-4ad2-a22d-1aa3fb964193` });
+        this.headers = new Headers({ 'Authorization': `Bearer ${ApiKey.TorboxApiKey}` });
         this.baseUrl = "http://192.168.0.22:5000/main";
         //this.baseUrl = "http://localhost:5000/main";
         this.searchBaseUrl = "http://192.168.0.22:5000/search";
